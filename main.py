@@ -2,10 +2,9 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as msb
 import serial
+import serial.tools.list_ports
 
 
-
-#port = serial.tools.list_ports.comports()
 
 class Application(tk.Frame):
     def __init__(self, master=None):
@@ -13,8 +12,16 @@ class Application(tk.Frame):
         self.master = master
         self.pack()
         self.create_widgets()
-        self.create_combobox()
         self.serial_ports()
+        self.create_combobox(self.connected)
+        self.create_textbox()
+     
+        print(self.connected)
+
+
+    def create_textbox(self):
+        self.textbox = tk.Text()
+        self.textbox.pack(side="bottom")
 
     def create_widgets(self):
         self.hi_there = tk.Button(self)
@@ -29,13 +36,19 @@ class Application(tk.Frame):
         print("hi there, everyone!")
 
 
-    def create_combobox(self):
+    def create_button(self):
+        self.button = tk.Button(self)
+        self.button["text"] = "button"
+        self.button["command"] = print("clicked button")
+
+
+    def create_combobox(self, values):
 
         self.cb_value = tk.StringVar()
         self.combobox = ttk.Combobox(root, textvariable = self.cb_value)
 
         self.combobox.place(x= 0, y=10)
-        self.combobox['values'] = ('A', 'B', 'C')
+        self.combobox['values'] = values
         self.combobox.current(0) 
         self.combobox.bind("<<ComboboxSelected>>", self.on_select_changed)
 
@@ -44,9 +57,15 @@ class Application(tk.Frame):
 
     def serial_ports(self):
 
-        self.test = 1
+        self.connected = []
+        self.ports = serial.tools.list_ports.comports()
+        for port in self.ports:
+            self.connected.append(port.device)
 
   
 root = tk.Tk()
-app = Application(master=root)
-app.mainloop()
+root.geometry('500x500')
+root.title('GUI_APP')
+
+root = Application(master=root)
+root.mainloop()
