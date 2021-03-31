@@ -11,16 +11,16 @@ class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
 
-        while(1):
-            self.master = master
-            self.pack()
-            self.create_widgets()
-            self.serial_ports()
-            self.create_combobox(self.connected)
-            self.create_textbox()
-            self.serial_connect()
-     
-            print(self.connected)
+        
+        self.master = master
+        self.pack()
+        self.create_widgets()
+        self.serial_ports()
+        self.create_combobox(self.connected)
+        self.create_textbox()
+        self.serial_connect()
+
+        print(self.connected)
 
 
     def create_textbox(self):
@@ -71,10 +71,11 @@ class Application(tk.Frame):
 
     def serial_connect(self):
 
-        self.serial_port = serial.Serial( port="COM3", baudrate=115200, bytesize=8, timeout=2, stopbits= serial.STOPBITS_ONE )
+        self.serial_port = serial.Serial(port="COM3", baudrate=115200, bytesize=8, timeout=2, stopbits= serial.STOPBITS_ONE)     
         print(self.serial_port.name)
         res = self.serial_port.read()
         print(res)
+        print('1')
 
   
 root = tk.Tk()
