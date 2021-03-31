@@ -3,25 +3,32 @@ import tkinter.ttk as ttk
 import tkinter.messagebox as msb
 import serial
 import serial.tools.list_ports
+import time
 
 
 
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
-        self.master = master
-        self.pack()
-        self.create_widgets()
-        self.serial_ports()
-        self.create_combobox(self.connected)
-        self.create_textbox()
+
+        while(1):
+            self.master = master
+            self.pack()
+            self.create_widgets()
+            self.serial_ports()
+            self.create_combobox(self.connected)
+            self.create_textbox()
+            self.serial_connect()
      
-        print(self.connected)
+            print(self.connected)
 
 
     def create_textbox(self):
         self.textbox = tk.Text()
         self.textbox.pack(side="bottom")
+
+        self.textbox.insert(tk.INSERT, "Conneted COM's:\n")
+        self.textbox.insert(tk.END, self.connected)
 
     def create_widgets(self):
         self.hi_there = tk.Button(self)
@@ -61,6 +68,13 @@ class Application(tk.Frame):
         self.ports = serial.tools.list_ports.comports()
         for port in self.ports:
             self.connected.append(port.device)
+
+    def serial_connect(self):
+
+        self.serial_port = serial.Serial( port="COM3", baudrate=115200, bytesize=8, timeout=2, stopbits= serial.STOPBITS_ONE )
+        print(self.serial_port.name)
+        res = self.serial_port.read()
+        print(res)
 
   
 root = tk.Tk()
