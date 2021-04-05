@@ -18,11 +18,17 @@ class Application(tk.Frame):
         self.serial_ports()
         self.create_combobox(self.connected)
         self.create_textbox()
+        self.create_label()
 
         for check in self.connected:
             if check == 'COM3':
                 self.serial_connect()
+                self.open_serial_com3 = True
+            else:
+                self.open_serial_com3 = False
         #self.serial_connect()
+
+        #self.update()
 
         print(self.connected)
 
@@ -40,8 +46,15 @@ class Application(tk.Frame):
         self.hi_there["command"] = self.say_hi
         self.hi_there.pack(side="top")
         self.quit = tk.Button(self, text="QUIT", fg="red",
-                              command=self.master.destroy)
+                              command=self.stop_app)
         self.quit.pack(side="bottom")
+
+    def stop_app(self):
+        self.master.destroy()
+
+        if self.open_serial_com3:
+            self.serial_port.close()
+        #self.quit.configure(command =self.master.destroy)
 
     def say_hi(self):
         print("hi there, everyone!")
@@ -66,6 +79,10 @@ class Application(tk.Frame):
     def on_select_changed(self, event):
         msb.showinfo("Info", self.cb_value.get())
 
+    def create_label(self):
+        self.label = tk.Label(root, text="Label Text")
+        self.label.pack()
+
     def serial_ports(self):
 
         self.connected = []
@@ -81,10 +98,23 @@ class Application(tk.Frame):
         print(res)
         print('1')
 
+    def update(self):
+
+
+        self.testx = 1
+        self.label.config(text="555")
+        print("tedt 600")
+        self.testx += 1
+        #self.textbox.config(text = "Test")
+        #self.textbox.insert(tk.INSERT, "test")
+        root.after(1000, self.update())
+
   
 root = tk.Tk()
 root.geometry('500x500')
 root.title('GUI_APP')
 
 root = Application(master=root)
+
+root.after(1000, Application.update)
 root.mainloop()
