@@ -28,7 +28,9 @@ class Application(tk.Frame):
                 self.open_serial_com3 = False
         #self.serial_connect()
 
-        #self.update()
+        self.testx = 1
+
+        self.update()
 
         print(self.connected)
 
@@ -94,27 +96,27 @@ class Application(tk.Frame):
 
         self.serial_port = serial.Serial(port="COM3", baudrate=115200, bytesize=8, timeout=2, stopbits= serial.STOPBITS_ONE)
         print(self.serial_port.name)
-        res = self.serial_port.read()
+        res = self.serial_port.readline()
         print(res)
         print('1')
 
     def update(self):
 
 
-        self.testx = 1
-        self.label.config(text="555")
-        print("tedt 600")
+
+        self.label.config(text=str(self.serial_port.readline()))
+        print("serial:", self.serial_port.readline())
         self.testx += 1
         #self.textbox.config(text = "Test")
         #self.textbox.insert(tk.INSERT, "test")
-        root.after(1000, self.update())
+        root.after(100, self.update)
 
   
 root = tk.Tk()
 root.geometry('500x500')
 root.title('GUI_APP')
 
-root = Application(master=root)
 
-root.after(1000, Application.update)
+#root.after(1000, Application(master=root).update)
+root = Application(master=root)
 root.mainloop()
