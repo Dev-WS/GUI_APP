@@ -20,12 +20,7 @@ class Application(tk.Frame):
         self.create_textbox()
         self.create_label()
 
-        for check in self.connected:
-            if check == 'COM3':
-                self.serial_connect()
-                self.open_serial_com3 = True
-            else:
-                self.open_serial_com3 = False
+        self.connect_serial()
         #self.serial_connect()
 
         self.testx = 1
@@ -43,30 +38,22 @@ class Application(tk.Frame):
         self.textbox.insert(tk.END, self.connected)
 
     def create_widgets(self):
-        self.hi_there = tk.Button(self)
-        self.hi_there["text"] = "Hello World\n(click me)"
-        self.hi_there["command"] = self.say_hi
-        self.hi_there.pack(side="top")
-        self.quit = tk.Button(self, text="QUIT", fg="red",
-                              command=self.stop_app)
+
+        self.button_connect = tk.Button(self, text="CONNECT", fg="blue", command=self.connect_serial)
+        self.button_connect.pack(side="top")
+
+        self.quit = tk.Button(self, text="QUIT", fg="red", command=self.stop_app)
         self.quit.pack(side="bottom")
 
     def stop_app(self):
         self.master.destroy()
 
-        if self.open_serial_com3:
-            self.serial_port.close()
+        #if self.open_serial_com3:
+        self.serial_port.close()
         #self.quit.configure(command =self.master.destroy)
 
     def say_hi(self):
         print("hi there, everyone!")
-
-
-    def create_button(self):
-        self.button = tk.Button(self)
-        self.button["text"] = "button"
-        self.button["command"] = print("clicked button")
-
 
     def create_combobox(self, values):
 
@@ -92,21 +79,29 @@ class Application(tk.Frame):
         for port in self.ports:
             self.connected.append(port.device)
 
-    def serial_connect(self):
+    def serial_connect(self, port_number):
 
-        self.serial_port = serial.Serial(port="COM3", baudrate=115200, bytesize=8, timeout=2, stopbits= serial.STOPBITS_ONE)
+        self.serial_port = serial.Serial(port=port_number, baudrate=115200, bytesize=8, timeout=2, stopbits= serial.STOPBITS_ONE)
         print(self.serial_port.name)
         res = self.serial_port.readline()
         print(res)
         print('1')
 
+    def connect_serial(self):
+        for check in self.connected:
+            if check == 'COM6':
+                port_number = 'COM6'
+                print(str(self.on_select_changed))
+                self.serial_connect(port_number)
+                self.open_serial_com3 = True
+            else:
+                self.open_serial_com3 = False
+
     def update(self):
 
-
-
         self.label.config(text=str(self.serial_port.readline()))
-        print("serial:", self.serial_port.readline())
-        self.testx += 1
+        #print("serial:", self.serial_port.readline())
+        #self.testx += 1
         #self.textbox.config(text = "Test")
         #self.textbox.insert(tk.INSERT, "test")
         root.after(100, self.update)
