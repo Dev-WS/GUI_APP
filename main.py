@@ -1,117 +1,92 @@
-import tkinter as tk
-import tkinter.ttk as ttk
-import tkinter.messagebox as msb
-import serial
-import serial.tools.list_ports
 import time
+import serial
+import tkinter as tk
+import tkinter.messagebox as msb
+import serial.tools.list_ports
+from tkinter import ttk, VERTICAL, HORIZONTAL, N, S, E, W
 
 
+class ConsolePlotUi:
+    def __init__(self, frame):
+        self.frame = frame
+        ttk.Label(self.frame, text='Test1').grid(column=0, row=1, sticky=W)
+        ttk.Label(self.frame, text='Test1').grid(column=0, row=4, sticky=W)
 
-class Application(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
+class ConsoleUi:
+    def __init__(self, frame):
+        self.frame = frame
+        ttk.Label(self.frame, text='Test2').grid(column=0, row=1, sticky=W)
+        ttk.Label(self.frame, text='Test2').grid(column=0, row=4, sticky=W)
 
-        
-        self.master = master
-        self.pack()
-        self.create_widgets()
-        self.serial_ports()
-        self.create_combobox(self.connected)
-        self.create_textbox()
-        self.create_label()
+class ConsoleBoardUi:
+    def __init__(self, frame):
+        self.frame = frame
+        ttk.Label(self.frame, text='Test3').grid(column=0, row=1, sticky=W)
+        ttk.Label(self.frame, text='Test3').grid(column=0, row=4, sticky=W)
 
-        self.connect_serial()
-        #self.serial_connect()
-
-        self.testx = 1
-
-        self.update()
-
-        print(self.connected)
-
-
-    def create_textbox(self):
-        self.textbox = tk.Text()
-        self.textbox.pack(side="bottom")
-
-        self.textbox.insert(tk.INSERT, "Conneted COM's:\n")
-        self.textbox.insert(tk.END, self.connected)
-
-    def create_widgets(self):
-
-        self.button_connect = tk.Button(self, text="CONNECT", fg="blue", command=self.connect_serial)
-        self.button_connect.pack(side="top")
-
-        self.quit = tk.Button(self, text="QUIT", fg="red", command=self.stop_app)
-        self.quit.pack(side="bottom")
-
-    def stop_app(self):
-        self.master.destroy()
-
-        #if self.open_serial_com3:
-        self.serial_port.close()
-        #self.quit.configure(command =self.master.destroy)
-
-    def say_hi(self):
-        print("hi there, everyone!")
-
-    def create_combobox(self, values):
-
-        self.cb_value = tk.StringVar()
-        self.combobox = ttk.Combobox(root, textvariable = self.cb_value)
-
-        self.combobox.place(x= 0, y=10)
-        self.combobox['values'] = values
-        self.combobox.current(0) 
-        self.combobox.bind("<<ComboboxSelected>>", self.on_select_changed)
-
-    def on_select_changed(self, event):
-        msb.showinfo("Info", self.cb_value.get())
-
-    def create_label(self):
-        self.label = tk.Label(root, text="Label Text")
-        self.label.pack()
-
-    def serial_ports(self):
+        self.button_connect = ttk.Button(self.frame, text="CONNECT", command=print('connected'))
+        self.button_connect.grid(column=1, row=2, sticky=W)
 
         self.connected = []
         self.ports = serial.tools.list_ports.comports()
         for port in self.ports:
             self.connected.append(port.device)
 
-    def serial_connect(self, port_number):
+        self.create_combobox(self.connected)
 
-        self.serial_port = serial.Serial(port=port_number, baudrate=115200, bytesize=8, timeout=2, stopbits= serial.STOPBITS_ONE)
-        print(self.serial_port.name)
-        res = self.serial_port.readline()
-        print(res)
-        print('1')
+    def create_combobox(self, values):
+        self.cb_value = tk.StringVar()
+        self.combobox = ttk.Combobox(self.frame, textvariable=self.cb_value)
+        #self.combobox.place(x=0, y=10)
+        self.combobox.grid(column=2, row=3, sticky=W)
+        self.combobox['values'] = values
+        self.combobox.current(0)
+        self.combobox.bind("<<ComboboxSelected>>", self.on_select_changed)
 
-    def connect_serial(self):
-        for check in self.connected:
-            if check == 'COM6':
-                port_number = 'COM6'
-                print(str(self.on_select_changed))
-                self.serial_connect(port_number)
-                self.open_serial_com3 = True
-            else:
-                self.open_serial_com3 = False
-
-    def update(self):
-
-        self.label.config(text=str(self.serial_port.readline()))
-        #print("serial:", self.serial_port.readline())
-        #self.testx += 1
-        #self.textbox.config(text = "Test")
-        #self.textbox.insert(tk.INSERT, "test")
-        root.after(100, self.update)
-
-  
-root = tk.Tk()
-root.geometry('500x500')
-root.title('GUI_APP')
+    def on_select_changed(self, event):
+        msb.showinfo("Info", self.cb_value.get())
 
 
-#root.after(1000, Application(master=root).update)
-root = Application(master=root)
-root.mainloop()
+class Application:
+    def __init__(self, root):
+        self.root = root
+        root.title('GUI_APP')
+        root.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
+
+        vertical_pane = ttk.PanedWindow(self.root, orient=VERTICAL)
+        vertical_pane.grid(row=0, column=0, sticky="nsew")
+        horizontal_pane = ttk.PanedWindow(vertical_pane, orient=HORIZONTAL)
+        vertical_pane.add(horizontal_pane)
+
+        controlboard_frame = ttk.Labelframe(horizontal_pane, text="Control Board")
+        controlboard_frame.columnconfigure(1, weight=1)
+        horizontal_pane.add(controlboard_frame, weight=1)
+
+        plot_frame = ttk.Labelframe(horizontal_pane, text="Plot")
+        plot_frame.columnconfigure(1, weight=1)
+        horizontal_pane.add(plot_frame, weight=1)
+
+        console_frame = ttk.Labelframe(vertical_pane, text="Console")
+        vertical_pane.add(console_frame, weight=1)
+
+        self.consoleboard = ConsoleBoardUi(controlboard_frame)
+        self.console = ConsoleUi(console_frame)
+        self.plotboard = ConsolePlotUi(plot_frame)
+
+        self.root.protocol('WM_DELETE_WINDOW', self.stop_app)
+
+    def stop_app(self):
+        self.root.destroy()
+        print('App Closed')
+        #serial_port.close()
+
+
+def main():
+    root = tk.Tk()
+    app = Application(root)
+    app.root.mainloop()
+
+
+if __name__ == '__main__':
+    main()
