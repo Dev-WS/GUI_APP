@@ -25,7 +25,7 @@ class ConsoleBoardUi:
         ttk.Label(self.frame, text='Test3').grid(column=0, row=4, sticky=W)
 
         self.button_connect = ttk.Button(self.frame, text="CONNECT", command=print('connected'))
-        self.button_connect.grid(column=1, row=2, sticky=W)
+        self.button_connect.grid(column=0, row=3, sticky=W)
 
         self.connected = []
         self.ports = serial.tools.list_ports.comports()
@@ -33,18 +33,38 @@ class ConsoleBoardUi:
             self.connected.append(port.device)
 
         self.create_combobox(self.connected)
+        self.connect_serial()
 
     def create_combobox(self, values):
         self.cb_value = tk.StringVar()
         self.combobox = ttk.Combobox(self.frame, textvariable=self.cb_value)
         #self.combobox.place(x=0, y=10)
-        self.combobox.grid(column=2, row=3, sticky=W)
+        self.combobox.grid(column=0, row=2, sticky=W)
         self.combobox['values'] = values
         self.combobox.current(0)
         self.combobox.bind("<<ComboboxSelected>>", self.on_select_changed)
 
     def on_select_changed(self, event):
         msb.showinfo("Info", self.cb_value.get())
+
+    def connect_serial(self):
+        for check in self.connected:
+            if check == 'COM6':
+                port_number = 'COM6'
+                print(str(self.on_select_changed))
+                self.serial_connect(port_number)
+                self.open_serial_com3 = True
+            else:
+                self.open_serial_com3 = False
+                print('Not connected')
+
+    def serial_connect(self, port_number):
+
+        self.serial_port = serial.Serial(port=port_number, baudrate=115200, bytesize=8, timeout=2, stopbits= serial.STOPBITS_ONE)
+        print(self.serial_port.name)
+        res = self.serial_port.readline()
+        print(res)
+        print('1')
 
 
 class Application:
