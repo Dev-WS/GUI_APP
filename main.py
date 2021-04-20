@@ -103,6 +103,7 @@ class ConsoleUi:
                 break
             else:
                 self.display(record)
+
         self.frame.after(1000, self.poll_log_queue)
 
 
@@ -112,7 +113,7 @@ class ConsoleBoardUi:
         ttk.Label(self.frame, text='Test3').grid(column=0, row=1, sticky=W)
         ttk.Label(self.frame, text='Test3').grid(column=0, row=4, sticky=W)
 
-        self.create_button_connect()
+        #self.create_button_connect()
         #threading.Thread(target=self.create_button_connect).start()
 
 
@@ -122,11 +123,23 @@ class ConsoleBoardUi:
             self.connected.append(port.device)
 
         self.create_combobox(self.connected)
-        self.connect_serial()
+
+        self.create_button_connect()
+
+        self.read_serialport()
+        #self.connect_serial()
 
     def create_button_connect(self):
         self.button_connect = ttk.Button(self.frame, text="CONNECT", command=self.print_smthg)
         self.button_connect.grid(column=0, row=3, sticky=W)
+
+        getport = self.combobox.get()
+        getport_status = self.combobox.current()
+
+
+        print("Getport values is:", getport, "status:", getport_status)
+        self.button_connect.bind('<Button-1>', self.serial_connect('COM3'))
+
 
     def print_smthg(self):
         print(str(test))
@@ -141,18 +154,20 @@ class ConsoleBoardUi:
         self.combobox.bind("<<ComboboxSelected>>", self.on_select_changed)
 
     def on_select_changed(self, event):
-        msb.showinfo("Info", self.cb_value.get())
+        msb.showinfo("Info", str(self.cb_value.get()))
+        print(self.combobox.get())
+
+        return self.combobox.get()
+
 
     def connect_serial(self):
-        for check in self.connected:
-            if check == 'COM6':
-                port_number = 'COM6'
-                print(str(self.on_select_changed))
-                self.serial_connect(port_number)
-                self.open_serial_com3 = True
-            else:
-                self.open_serial_com3 = False
-                print('Not connected')
+
+        print(self.combobox.get())
+
+        port_number = self.combobox.get()
+        print(str(self.on_select_changed))
+        self.serial_connect(port_number)
+        self.open_serial_com3 = True
 
     def serial_connect(self, port_number):
 
@@ -161,6 +176,13 @@ class ConsoleBoardUi:
         res = self.serial_port.readline()
         print(res)
         print('1')
+
+
+    def read_serialport(self):
+
+        readedvalue = self.serial_port.read()
+        print(readedvalue)
+        self.frame.after(100, self.read_serialport)
 
 
 class Application:
